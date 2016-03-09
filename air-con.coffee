@@ -2,9 +2,10 @@
 #
 #
 # Commands:
+#   (暖房|エアコン|冷房)を消して
+#   エアコンを送風にして
+#   暖房をつけて
 #   暖房を<temperature(18〜25)>度にして
-#   暖房(を|)消して
-#   暖房(を|)つけて
 
 fs   = require 'fs'
 path = require 'path'
@@ -30,8 +31,10 @@ module.exports = (robot) ->
         console.log('Unable to read file', error) unless error.code is 'ENOENT'
     msg
   #
-  doControl = (func) ->
-    msg = "暖房を#{func}にします"
+  doControl = (func,name="エアコン", func_name="") ->
+    if func_name.length == 0
+      func_name = func;
+    msg = "#{name}を#{func_name}にします"
     filePath = "/home/pi/git/irweb/data/sharp/ac-222fd/#{func}.json"
     try
       data = fs.readFileSync filePath, 'utf-8'
@@ -50,8 +53,12 @@ module.exports = (robot) ->
         console.log('Unable to read file', error) unless error.code is 'ENOENT'
     msg
   #
-  robot.hear /暖房(を|)消して/i, (res) ->
-    msg = doControl("off")
+  robot.hear /(エアコン)(を|)送風にして/i, (res) ->
+    msg = doControl("wind_auto", name=res.match[1], func_name="送風")
+    res.send msg
+  #
+  robot.hear /(暖房|エアコン|冷房)(を|)消して/i, (res) ->
+    msg = doControl("off", name=res.match[1])
     res.send msg
   #
   robot.hear /暖房(を|)つけて/i, (res) ->
