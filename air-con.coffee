@@ -4,6 +4,7 @@
 # Commands:
 #   (暖房|エアコン|冷房)を消して
 #   エアコンを送風にして
+#   エアコンを除湿にして
 #   暖房をつけて
 #   暖房を<temperature(18〜25)>度にして
 #   冷房を<temperature(20〜28)>度にして
@@ -20,14 +21,15 @@ module.exports = (robot) ->
       if data
         console.log(data)
         robot.http("http://irweb_c5a2.local/messages")
-        .header('Content-Type', 'application/json')
-        .post(data) (err, res, body) ->
-        if err
-          return "Encountered an error :( #{err}"
-        if res.statusCode isnt 200
-          msg = "送信に失敗しました :("
-        else
-          msg = "送信に成功しました"
+          .header('Content-Type', 'application/json')
+          .post(data) (err, res, body) ->
+            if err
+              return "…コマンドを送信できませんでした :( \n#{err}"
+            if res.statusCode isnt 200
+              msg += "…コマンド送信できたけど失敗したようです :("
+            console.log(res)
+            #else
+            #  msg = "送信に成功しました"
     catch error
         console.log('Unable to read file', error) unless error.code is 'ENOENT'
     msg
@@ -75,6 +77,9 @@ module.exports = (robot) ->
         console.log('Unable to read file', error) unless error.code is 'ENOENT'
     msg
   #
+  robot.hear /(エアコン)(を|)除湿にして/i, (res) ->
+    msg = doControl("dehumidification", name=res.match[1], func_name="除湿")
+    res.send msg
   robot.hear /(エアコン)(を|)送風にして/i, (res) ->
     #msg = doControl("wind_auto", name=res.match[1], func_name="送風")
     msg = doControl("wind_Louver", name=res.match[1], func_name="送風")

@@ -19,7 +19,7 @@ module.exports = (robot) ->
 		else if index <=64
 			msg = "何も感じない"
 		else if index <= 74
-			msg = "快適"
+			msg = "快適な"
 		else if index <= 79
 			msg = "やや暑い"
 		else if index <= 84
@@ -33,6 +33,6 @@ module.exports = (robot) ->
 		index = calculateIndex(t,h)
 		msg = "現在の不快指数は " + index
 		res.send msg
-		msg = "体感としては " + explainIndex(index) + " な感じです"
+		msg = "体感としては " + explainIndex(index) + " 感じです"
 		res.send msg
 
